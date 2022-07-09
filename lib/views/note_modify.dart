@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get_it/get_it.dart';
+import 'package:notes_rest_api/models/note_insert.dart';
 
 import '../models/note.dart';
 import '../services/notes_service.dart';
@@ -32,14 +33,17 @@ class _NoteModifyState extends State<NoteModify> {
 @override
   void initState() {
     super.initState();
+
     if (isEditing) {
       setState(() {
         _isLoading = true;
       });
-      notesService.getNote(widget.noteID!).then((response) {
+      notesService.getNote(widget.noteID!)
+      .then((response) {
         setState(() {
           _isLoading = false;
         });
+
         if (response.error!) {
           errorMessage = response.errorMessage ?? 'An error occurred.';
         }
@@ -83,8 +87,48 @@ class _NoteModifyState extends State<NoteModify> {
               child: MaterialButton(
                   child: Text('Submit', style: TextStyle(color: Colors.white)),
                   color: Theme.of(context).primaryColor,
-                  onPressed: () {
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+
+                    if (isEditing){
+                      //update note
+                    } else {
+
+                      setState(() {
+                      _isLoading = true;});
+
+                      final note = NoteInsert(
+                        noteTitle: _titleController.text, 
+                        noteContent: _contentController.text
+                      );
+
+                      final result = await notesService.createNote(note);
+
+                       setState(() {
+                      _isLoading = false;});
+
+                      final title = 'Done';
+                      final text = result.error! ? (result.errorMessage ?? 'An error occured.') : 'Your note was created';
+
+                  showDialog(context: context, 
+                             builder: (_) => AlertDialog(
+                              title: Text(title),
+                              content: Text(text),
+                              actions: <Widget>[
+                                MaterialButton(
+                                  child: Text('Ok'),
+                                  onPressed: (){
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                             )
+                            )
+                             .then((data) {
+                      if (result.data!) {
+                        Navigator.of(context).pop();
+                      }
+                    });
+                    }
                   },
                 ),
             ),
