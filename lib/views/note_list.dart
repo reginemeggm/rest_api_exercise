@@ -52,9 +52,10 @@ class _NoteListState extends State<NoteList>{
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) =>  NoteModify(),
-            ),
-          );
+              builder: (_) =>  NoteModify()))
+              .then((_) {
+                _fetchNotes();
+              });
         },
         child: const Icon(Icons.add),
       ),

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:notes_rest_api/models/note_insert.dart';
+
 import '../models/api_response.dart';
 import '../models/note.dart';
 import '../models/note_for_listing.dart';
@@ -9,6 +11,7 @@ class NotesService {
   static const api = 'https://tq-notes-api-jkrgrdggbq-el.a.run.app';
   static const headers = {
     'apiKey': 'e7ec8231-b9fc-4d2e-9243-c5dc3adc1b44',
+    'Content-Type': 'application/json'
   };
   
   Future<APIResponse<List<NoteForListing>>> getNotesList() {
@@ -35,6 +38,17 @@ Future<APIResponse<Note>> getNote(String noteID) {
       }
       return APIResponse<Note>(error: true, errorMessage: 'An error occured');
     }).catchError((_) => APIResponse<Note>(
+        error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<bool>> createNote(NoteInsert item) {
+    return http.post(Uri.parse('$api/notes'), headers: headers, body: json.encode(item.toJson()))
+    .then((data) {
+      if (data.statusCode == 201) {
+        return APIResponse<bool>(data: true);
+      }
+      return APIResponse<bool>(error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<bool>(
         error: true, errorMessage: 'An error occured'));
   }
   
