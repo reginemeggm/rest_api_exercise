@@ -1,3 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
+
+
+
+part 'note_insert.g.dart';
+
+@JsonSerializable()
+
 class NoteManipulation {
   String? noteTitle;
   String? noteContent;
@@ -9,13 +17,6 @@ NoteManipulation(
     }
   );
   
-  Map<String, dynamic> toJson() {
-    return {
-
-      "noteTitle": noteTitle,
-      "noteContent": noteContent
-
-    };
-  }
+  Map<String, dynamic> toJson() => _$NoteManipulationToJson(this);
 
 }
